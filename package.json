@@ -1,0 +1,29 @@
+{
+  "name": "ngfis-showcase",
+  "version": "0.0.1",
+  "description": "showcase project for ngfis",
+  "author": {
+    "name": "TZ",
+    "email": "atian25@qq.com"
+  },
+  "dependencies": {
+  },
+  "devDependencies": {
+  },
+  "scripts": {
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:ng-workflow/ngfis-showcase.git"
+  },
+  "keywords": [
+    "mocker",
+    "dashboard",
+    "supermocker"
+  ],
+  "homepage": "https://github.com/ng-workflow/ngfis-showcase",
+  "license": "MIT",
+  "engines": {
+    "node": ">=0.10.0"
+  }
+}
