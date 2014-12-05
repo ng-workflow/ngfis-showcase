@@ -17,9 +17,11 @@
     "url": "git@github.com:ng-workflow/ngfis-showcase.git"
   },
   "keywords": [
-    "mocker",
-    "dashboard",
-    "supermocker"
+    "fis",
+    "angular",
+    "workflow",
+    "tools",
+    "Front-end Integrated Solution"
   ],
   "homepage": "https://github.com/ng-workflow/ngfis-showcase",
   "license": "MIT",
