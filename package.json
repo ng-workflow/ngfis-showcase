@@ -6,9 +6,15 @@
     "name": "TZ",
     "email": "atian25@qq.com"
   },
+  "main": "server/index.js",
   "dependencies": {
+    "compression": "1.0.8",
+    "errorhandler": "1.1.1",
+    "express": "4.6.1",
+    "http-proxy": "1.1.5"
   },
   "devDependencies": {
+    "connect-inject": "^0.3.2"
   },
   "scripts": {
   },

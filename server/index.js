@@ -1,6 +1,6 @@
 'use strict';
 
-var meta = require('./package.json'),
+var meta = require('../package.json'),
     express = require('express'),
     compress = require('compression'),
     path = require('path'),
