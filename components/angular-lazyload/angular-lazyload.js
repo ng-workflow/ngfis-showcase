@@ -24,9 +24,7 @@
       var m = origMethod(name, requires, configFn);
       initHooks(m);
       initTemplate(m);
-      if(requires.indexOf('ngRoute') !== -1) {
-        initRoute(m);
-      }
+      initBootstrap(m);
       return m;
     }
   };
@@ -82,8 +80,9 @@
   /**
    * support dynamic loading for ngRoute
    */
-  function initRoute(app){
+  function initRoute(app, cb){
     app.run(['$rootScope', '$q', '$timeout', function($rootScope, $q, $timeout){
+      console.log('initRoute')
       //listen to route change event to hook
       $rootScope.$on('$routeChangeStart', function(e, target) {
         //console.debug(e, '|', target);
@@ -126,6 +125,36 @@
         console.error('$routeChangeError', nextRoute, lastRoute, error);
       });
     }]);
+    cb();
+  }
+
+  function initSingle(app, cb){
+    var params = getURLParameters(window.location.href);
+    var moduleId = params['route'].replace(/\.html$/, '').replace(/^\//, '').replace(/\/$/, '');
+    require.async('modules/' + moduleId, function(module) {
+      //TODO: if(!module)
+      //article/list -> articleList
+      var ctrlName = camelCase(moduleId) + 'Ctrl';
+      document.body.setAttribute('ng-controller', ctrlName + ' as vm');
+
+      //没有templateUrl时直接把template写入为innerHTML
+      if(module.templateUrl){
+        document.querySelector('*[ng-view]').setAttribute('ng-include', "'" +  module.templateUrl + "'");
+      }else if(module.template){
+        document.querySelector('*[ng-view]').innerHTML = module.template;
+      }
+      //启动
+      cb();
+    });
+  }
+
+  function initBootstrap(app){
+    app.bootstrap = function(){
+      var fn = (app.requires.indexOf('ngRoute') !== -1) ? initRoute : initSingle;
+      fn(app, function(){
+        angular.bootstrap(document, [app.name]);
+      });
+    }
   }
 
   /**
@@ -144,6 +173,20 @@
     return str.replace(/([A-Z])/g, function(m){
       return "/" + m.toLowerCase();
     });
+  }
+
+  /**
+   * 获取URL参数
+   * @param {String} url 网址
+   * @param {String} [name] 参数名
+   * @returns {Object/String} 参数对象或参数值
+   */
+  function getURLParameters(url, name) {
+    var params = {};
+    url.replace(/[?&]+([^=&]+)=([^&#]*)/gi, function(m, key, value) {
+      params[key] = decodeURIComponent(value);
+    });
+    return name ? params[name] : params;
   }
 
 })(this);
