@@ -1,4 +1,4 @@
-//require('modules/shared/gameList');
+require('shared/gameList');
 
 var app = require('app');
 console.log('main')
@@ -8,6 +8,6 @@ app.controller('mainCtrl', function($scope, $http){
 
 
 exports.template = __inline('main.tpl.html');
-exports.template = require('modules/menu').template + 'xxx'
-//exports.templateUrl = 'modules/shared/gameList';
+//exports.template = require('modules/menu').template + 'xxx'
+//exports.templateUrl = 'shared/gameList';
 //exports.templateUrl = require('modules/shared/gameList');

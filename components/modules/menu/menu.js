@@ -1,4 +1,4 @@
-//require('modules/shared/gameList');
+require('shared/gameList');
 
 var app = require('app');
 
