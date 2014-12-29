@@ -1,3 +1,8 @@
+/**
+ * angular lazyload
+ * - support `single ctrl` and `ngRoute`
+ * - add `angular.module` , `angular.loadModule`, `angular.template`, `app.bootstrap`
+ */
 (function(global, undefined) {
   'use strict';
   var angular;
@@ -10,7 +15,7 @@
     angular = global['angular'];
   }
 
-  if (!angular) {
+  if(!angular){
     throw new Error('Missing angular');
   }
 
@@ -27,6 +32,16 @@
       initBootstrap(m);
       return m;
     }
+  };
+
+  /**
+   * dynamic load deps
+   * @param moduleIds
+   * @param [callback]
+   * @returns {*}
+   */
+  angular.loadModule = function(moduleIds, callback){
+    return require.async(moduleIds, callback);
   };
 
   /**
@@ -52,6 +67,7 @@
           app[key] = hooks[key];
         }
       }
+      hooks = undefined;
     });
   }
 
@@ -78,11 +94,22 @@
   }
 
   /**
+   * add `app.bootstrap()` interface
+   */
+  function initBootstrap(app){
+    app.bootstrap = function(){
+      var fn = (app.requires.indexOf('ngRoute') !== -1) ? initRoute : initSingle;
+      fn(app, function(){
+        angular.bootstrap(document, [app.name]);
+      });
+    }
+  }
+
+  /**
    * support dynamic loading for ngRoute
    */
   function initRoute(app, cb){
     app.run(['$rootScope', '$q', '$timeout', function($rootScope, $q, $timeout){
-      console.log('initRoute')
       //listen to route change event to hook
       $rootScope.$on('$routeChangeStart', function(e, target) {
         //console.debug(e, '|', target);
@@ -102,7 +129,7 @@
 
             //load module promise
             route.resolve.$module = ['$timeout', function ($timeout) {
-              require.async(moduleId, function (m){
+              angular.loadModule(moduleId, function (m){
                 //$timeout(function(){
                   templateDefer.resolve(m && m.template);
                   moduleDefer.resolve(m);
@@ -128,11 +155,13 @@
     cb();
   }
 
+  /**
+   * support only one ctrl page, ?route=/menu/list
+   */
   function initSingle(app, cb){
     var params = getURLParameters(window.location.href);
     var moduleId = params['route'].replace(/\.html$/, '').replace(/^\//, '').replace(/\/$/, '');
-    require.async('modules/' + moduleId, function(module) {
-      //TODO: if(!module)
+    angular.loadModule('modules/' + moduleId, function(module) {
       //article/list -> articleList
       var ctrlName = camelCase(moduleId) + 'Ctrl';
       document.body.setAttribute('ng-controller', ctrlName + ' as vm');
@@ -148,15 +177,6 @@
     });
   }
 
-  function initBootstrap(app){
-    app.bootstrap = function(){
-      var fn = (app.requires.indexOf('ngRoute') !== -1) ? initRoute : initSingle;
-      fn(app, function(){
-        angular.bootstrap(document, [app.name]);
-      });
-    }
-  }
-
   /**
    * change `/menu/list` -> 'menuList'
    */
@@ -168,6 +188,7 @@
 
   /**
    * change 'menuList' -> `/menu/list`
+   * /[A-Z]+(?=[A-Z][a-z])|[A-Z][a-z]+/g
    */
   function pathCase(str){
     return str.replace(/([A-Z])/g, function(m){
