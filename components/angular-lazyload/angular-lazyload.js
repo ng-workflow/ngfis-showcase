@@ -112,6 +112,7 @@
     app.run(['$rootScope', '$q', '$timeout', function($rootScope, $q, $timeout){
       //listen to route change event to hook
       $rootScope.$on('$routeChangeStart', function(e, target) {
+        //TODO: 第2次进来 / 频繁切换判断
         //console.debug(e, '|', target);
         var route = target && target.$$route;
         if(route){

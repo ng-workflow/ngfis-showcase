@@ -16,6 +16,7 @@
         deps: {}, // key - id, value - name/id
         urlPattern: null, // '/path/to/resources/%s'
         comboPattern: null, // '/path/to/combo-service/%s' or function (ids) { return url; }
+        urlPrefix: null,
         combo: false,
         maxUrlLength: 2000 // approximate value of combo url's max length (recommend 2000)
     };
@@ -408,6 +409,9 @@
         switch (type(url)) {
         case 'string':
             url = url.replace('%s', ids.join(','));
+            if(options.urlPrefix){
+              url = options.combo ? (url + ';' + options.urlPrefix) : (options.urlPrefix + url);
+            }
             break;
         case 'function':
             url = url(ids);

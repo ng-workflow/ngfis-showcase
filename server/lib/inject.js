@@ -9,7 +9,9 @@ module.exports = function (dir) {
   if(app.get('env') === 'development'){
 
     dir = path.join(__dirname, dir || '../inject');
-
+    if(!fs.existsSync(dir)){
+      fs.mkdirSync(dir);
+    }
     //mount inject path to static
     app.use('/inject', express.static(dir));
 

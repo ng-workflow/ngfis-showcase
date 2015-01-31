@@ -11,7 +11,7 @@ function isMalicious(filepath) {
 }
 
 module.exports = function (dir) {
-    dir = dir || '/public/c';
+    dir = dir || '/public/';
     var root = app.get('root') + dir,
         logger = app.get('logger') || console,
         lastHash, cache = {};
@@ -34,12 +34,18 @@ module.exports = function (dir) {
             res.setHeader('Cache-Control', 'public, max-age=' +
                 (app.get('env') === 'production' ? 60 * 60 * 24 * 365 : 0));
 
+            var k = url.lastIndexOf(';');
+            var prefix = '';
+            if(~k){
+              prefix = url.slice(k+1) || '';
+              url = url.slice(0, k);
+            }
             files = url.split(',');
             files.forEach(function (file) {
                 if (cache.hasOwnProperty(file)) return contents.push(cache[file]);
                 if (isMalicious(file)) return logger.error('[combo] malicious file: ' + file);
 
-                var filePath = path.resolve(root, file),
+                var filePath = path.resolve(root, prefix.replace(/^\//, ''), file),
                     content;
                 try {
                     content = fs.readFileSync(filePath, 'utf-8');
