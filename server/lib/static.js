@@ -1,11 +1,11 @@
 'use strict';
 
-var express = require('express'),
-    app = require('../index');
+var express = require('express');
+var app = require('../index');
 
 module.exports = function (dir) {
-    dir = dir || '/public';
-    return express.static(app.get('root') + dir, {
-        maxAge: app.get('env') === 'production' ? Infinity : 0
-    });
+  dir = dir || '/public';
+  return express.static(app.get('root') + dir, {
+    maxAge: app.get('env') === 'production' ? Infinity : 0
+  });
 };

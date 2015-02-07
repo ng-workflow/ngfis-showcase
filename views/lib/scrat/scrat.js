@@ -46,14 +46,16 @@
 
         // detect localStorage support and activate cache ability
         try {
-            if (options.hash !== localStorage.getItem('__SCRAT_HASH__')) {
+            if (options.hash !== localStorage.getItem(scrat.options.prefix + 'HASH')) {
                 scrat.clean();
-                localStorage.setItem('__SCRAT_HASH__', options.hash);
+                localStorage.setItem(scrat.options.prefix + 'HASH', options.hash);
             }
             options.cache = options.cache && !!options.hash;
         } catch (e) {
             options.cache = false;
         }
+
+        options._cache = options.cache;
 
         // detect scrat=nocombo,nocache in location.search
         if (/\bscrat=([\w,]+)\b/.test(location.search)) {
@@ -133,6 +135,13 @@
         if (options.cache) localStorage.setItem(options.prefix + id, css);
     };
 
+    proto.defineTemplate = function (id, factory){
+      var newFactory = function(){
+        return factory.apply(this, arguments);
+      };
+      return proto.define(id, newFactory);
+    };
+
     /**
      * Get a defined module
      * @param {string} id
@@ -178,7 +187,7 @@
                     localStorage.removeItem(key);
                 }
             });
-            localStorage.removeItem('__SCRAT_HASH__');
+            localStorage.removeItem(scrat.options.prefix + 'HASH');
         } catch (e) {}
     };
 
@@ -400,7 +409,8 @@
         var options = scrat.options,
             url = options.combo && options.comboPattern || options.urlPattern;
 
-        if (options.cache && fileType(ids[0]) === 'css') {
+        // options.cache -> options._cache 解决url带nocache的情况
+        if (options._cache && fileType(ids[0]) === 'css') {
             each(ids, function (id, i) {
                 ids[i] = id + '.js';
             });
@@ -420,7 +430,7 @@
             url = ids.join(',');
         }
 
-        return url + (~url.indexOf('?') ? '&' : '?') + options.hash;
+        return (options.domain || '') + url + (~url.indexOf('?') ? '&' : '?') + options.hash;
     };
 
     /**
