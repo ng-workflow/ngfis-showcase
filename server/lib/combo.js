@@ -33,6 +33,7 @@ module.exports = function (dir) {
       }
 
       res.setHeader('Cache-Control', 'public, max-age=' + (app.get('env') === 'production' ? 60 * 60 * 24 * 365 : 0));
+      res.setHeader('Content-Type', 'application/javascript');
 
       var k = url.lastIndexOf(';');
       var prefix = '';

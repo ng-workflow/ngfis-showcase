@@ -142,6 +142,21 @@
       return proto.define(id, newFactory);
     };
 
+
+    /**
+     * 获取URL参数
+     * @param {String} url 网址
+     * @param {String} [name] 参数名
+     * @returns {Object/String} 参数对象或参数值
+     */
+    proto.getURLParameters = function (url, name) {
+      var params = {};
+      url.replace(/[?&]+([^=&]+)=([^&#]*)/gi, function(m, key, value) {
+        params[key] = decodeURIComponent(value);
+      });
+      return name ? params[name] : params;
+    };
+
     /**
      * Get a defined module
      * @param {string} id
